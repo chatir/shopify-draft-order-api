@@ -1,3 +1,8 @@
+const cors = require('cors');
+
+app.use(cors({
+  origin: 'https://camvo.shop' // ✅ allow your front-end store
+}));
 const express = require('express');
 const axios = require('axios');
 const app = express();
