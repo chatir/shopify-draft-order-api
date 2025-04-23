@@ -2,11 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 
-const app = express(); // ✅ MUST come before app.use
+const app = express();
 
 // Enable CORS for your domain
 app.use(cors({
-  origin: 'https://camvo.shop' // ✅ allow your real front-end
+  origin: 'https://camvo.shop'
 }));
 
 app.use(express.json());
@@ -22,10 +22,15 @@ app.post('/create-draft-order', async (req, res) => {
   }
 
   try {
+    // Generate random order number (you can improve this with counters later)
+    const orderNumber = Math.floor(1000 + Math.random() * 9000); // e.g. 4821
+    const orderName = `ORDER N#${orderNumber}`;
+
     const response = await axios.post(
       `https://${SHOP}/admin/api/2025-04/draft_orders.json`,
       {
         draft_order: {
+          name: orderName,
           line_items: [
             {
               variant_id: parseInt(variant_id),
