@@ -1,17 +1,19 @@
-const cors = require('cors');
-
-app.use(cors({
-  origin: 'https://camvo.shop' // ✅ allow your front-end store
-}));
 const express = require('express');
+const cors = require('cors');
 const axios = require('axios');
-const app = express();
+
+const app = express(); // ✅ MUST come before app.use
+
+// Enable CORS for your domain
+app.use(cors({
+  origin: 'https://camvo.shop' // ✅ allow your real front-end
+}));
+
 app.use(express.json());
 
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 const SHOP = process.env.SHOP;
 
-// ✅ POST /create-draft-order
 app.post('/create-draft-order', async (req, res) => {
   const { variant_id, quantity } = req.body;
 
