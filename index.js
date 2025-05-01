@@ -67,12 +67,3 @@ app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
 });
 
- const variables = {
-      input: {
-        useCustomerDefaultAddress: true,
-        presentmentCurrencyCode: currencyCode,
-        allowDiscountCodesInCheckout: true,    // ← enable the “Enter discount code” field
-          note:  "Consult Services",
-          tags:  ["Consult Services"],
-      }
-    };
