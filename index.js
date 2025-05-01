@@ -29,37 +29,31 @@ app.post('/create-draft-order', async (req, res) => {
     const orderTitle = `ORDER N#${orderNumber}`;
 
     // ✅ Create the draft order via Shopify API
-// …
-const response = await axios.post(
-  `https://${SHOP}/admin/api/2025-04/draft_orders.json`,
-  {
-    draft_order: {
-      line_items: [
-        {
-          title: orderTitle,
-          price: price,
-          quantity: parseInt(quantity, 10),
-          requires_shipping: false
+    const response = await axios.post(
+      `https://${SHOP}/admin/api/2025-04/draft_orders.json`,
+      {
+        draft_order: {
+          line_items: [
+            {
+              title: orderTitle,
+              price: price,
+              quantity: parseInt(quantity),
+              requires_shipping: false // ✅ Service or non-physical item
+            }
+          ]
         }
-      ],
-
-      // ← insert here:
-      allowDiscountCodesInCheckout: true,    // ← enable the “Enter discount code” field
-      note:  "Consult Services",
-      tags:  ["Consult Services"]
-    }
-  },
-  {
-    headers: {
-      'X-Shopify-Access-Token': ACCESS_TOKEN,
-      'Content-Type': 'application/json'
-    }
-  }
-);
-// …
+      },
+      {
+        headers: {
+          'X-Shopify-Access-Token': ACCESS_TOKEN,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
     // ✅ Return the checkout link to frontend
-    res.json({ success: true, checkout_url: response.data.draft_order.invoice_url });
+    const checkoutUrl = response.data.draft_order.invoice_url;
+    res.json({ success: true, checkout_url: checkoutUrl });
 
   } catch (error) {
     console.error("❌ Shopify API error:", error.response?.data || error.message);
@@ -71,4 +65,4 @@ const response = await axios.post(
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
-});
+});`
