@@ -1,6 +1,16 @@
+const express = require('express');
+const cors = require('cors');
+const axios = require('axios');
+
+const app = express();
+
+// ─── CORS & JSON PARSING ───────────────────────────────────────────────────────
+app.use(cors({ origin: 'https://camvo.shop' }));
+app.use(express.json());
+
+// ─── DRAFT ORDER ROUTE ────────────────────────────────────────────────────────
 app.post('/create-draft-order', async (req, res) => {
   const { quantity, price } = req.body;
-
   if (!quantity || !price) {
     return res.status(400).json({ success: false, error: 'Missing quantity or price' });
   }
@@ -10,38 +20,31 @@ app.post('/create-draft-order', async (req, res) => {
     const orderTitle = `ORDER N#${orderNumber}`;
 
     const response = await axios.post(
-      `https://${SHOP}/admin/api/2025-04/draft_orders.json`,
+      `https://${process.env.SHOP}/admin/api/2025-04/draft_orders.json`,
       {
         draft_order: {
-          line_items: [
-            {
-              title: orderTitle,
-              price: price,
-              quantity: parseInt(quantity, 10),
-              requires_shipping: false
-            }
-          ],
-          // 1. Custom order-level discount
+          line_items: [{
+            title: orderTitle,
+            price,
+            quantity: parseInt(quantity, 10),
+            requires_shipping: false
+          }],
           applied_discount: {
-            title: 'Consult services',             // visible on the invoice
-            description: 'Consult services',       // internal description
-            value_type: 'fixed_amount',            // or 'percentage'
-            value: price,                          // discount amount
-            amount: price                          // total amount deducted
+            title: 'Consult services',
+            description: 'Consult services',
+            value_type: 'fixed_amount',
+            value: price,
+            amount: price
           },
-          // 2. Allow customers to enter discount codes at checkout
           allow_discount_codes: true,
-          // 3. Automatically apply any eligible automatic discounts
           accept_automatic_discounts: true,
-          // 4. Tag the draft order for easy filtering
           tags: 'Consult services',
-          // 5. Add an internal note
           note: 'Consult services'
         }
       },
       {
         headers: {
-          'X-Shopify-Access-Token': ACCESS_TOKEN,
+          'X-Shopify-Access-Token': process.env.ACCESS_TOKEN,
           'Content-Type': 'application/json'
         }
       }
@@ -53,3 +56,7 @@ app.post('/create-draft-order', async (req, res) => {
     res.status(500).json({ success: false, error: 'Error creating draft order' });
   }
 });
+
+// ─── START SERVER ────────────────────────────────────────────────────────────
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
