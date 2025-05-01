@@ -29,15 +29,9 @@ app.post('/create-draft-order', async (req, res) => {
             quantity: parseInt(quantity, 10),
             requires_shipping: false
           }],
-          applied_discount: {
-            title: 'Consult services',
-            description: 'Consult services',
-            value_type: 'fixed_amount',
-            value: price,
-            amount: price
-          },
+        
           allow_discount_codes: true,
-          accept_automatic_discounts: true,
+          accept_automatic_discounts: false,
           tags: 'Consult services',
           note: 'Consult services'
         }
