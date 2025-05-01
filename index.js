@@ -40,7 +40,12 @@ app.post('/create-draft-order', async (req, res) => {
               quantity: parseInt(quantity),
               requires_shipping: false // ✅ Service or non-physical item
             }
-          ]
+          ],
+
+          // ← Added per your request:
+          allowDiscountCodesInCheckout: true,    // enable the “Enter discount code” field
+          note:  "Consult Services",             // internal note
+          tags:  ["Consult Services"]            // order tags
         }
       },
       {
@@ -65,4 +70,4 @@ app.post('/create-draft-order', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
-});`
+});
