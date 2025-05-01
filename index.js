@@ -1,16 +1,6 @@
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-
-const app = express();
-
-// ─── CORS & JSON PARSING ───────────────────────────────────────────────────────
-app.use(cors({ origin: 'https://camvo.shop' }));
-app.use(express.json());
-
-// ─── DRAFT ORDER ROUTE ────────────────────────────────────────────────────────
 app.post('/create-draft-order', async (req, res) => {
   const { quantity, price } = req.body;
+
   if (!quantity || !price) {
     return res.status(400).json({ success: false, error: 'Missing quantity or price' });
   }
@@ -20,25 +10,26 @@ app.post('/create-draft-order', async (req, res) => {
     const orderTitle = `ORDER N#${orderNumber}`;
 
     const response = await axios.post(
-      `https://${process.env.SHOP}/admin/api/2025-04/draft_orders.json`,
+      `https://${SHOP}/admin/api/2025-04/draft_orders.json`,
       {
         draft_order: {
-          line_items: [{
-            title: orderTitle,
-            price,
-            quantity: parseInt(quantity, 10),
-            requires_shipping: false
-          }],
-        
-          allow_discount_codes: true,
-          accept_automatic_discounts: false,
-          tags: 'Consult services',
-          note: 'Consult services'
+          line_items: [
+            {
+              title: orderTitle,
+              price: price,
+              quantity: parseInt(quantity, 10),
+              requires_shipping: false
+            }
+          ],
+          allow_discount_codes: true,           // ← allow entering codes
+          accept_automatic_discounts: false,    // ← don’t auto-apply store discounts
+          tags: 'Consult services',             // ← your custom tag
+          note: 'Consult services'              // ← your internal note
         }
       },
       {
         headers: {
-          'X-Shopify-Access-Token': process.env.ACCESS_TOKEN,
+          'X-Shopify-Access-Token': ACCESS_TOKEN,
           'Content-Type': 'application/json'
         }
       }
@@ -50,7 +41,3 @@ app.post('/create-draft-order', async (req, res) => {
     res.status(500).json({ success: false, error: 'Error creating draft order' });
   }
 });
-
-// ─── START SERVER ────────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
