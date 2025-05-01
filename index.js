@@ -45,7 +45,7 @@ app.post('/create-draft-order', async (req, res) => {
           // ← Added per your request:
           allowDiscountCodesInCheckout: true,    // enable the “Enter discount code” field
           note:  "Consult Services",             // internal note
-          tags:  ["Consult Services"]            // order tags
+          tags: "Consult Services"         // order tags
         }
       },
       {
